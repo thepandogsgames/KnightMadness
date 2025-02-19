@@ -7,7 +7,6 @@ namespace Code.Board
     {
         private SpriteRenderer _spriteRenderer;
         private Vector2Int _boardPosition;
-        private bool _isOccupied;
         private int _spawnWeight;
         private IBoardPiece _currentPiece;
 
@@ -22,11 +21,6 @@ namespace Code.Board
             set => _boardPosition = value;
         }
 
-        public bool IsOccupied
-        {
-            get => _isOccupied;
-            set => _isOccupied = value;
-        }
 
         public int SpawnWeight
         {

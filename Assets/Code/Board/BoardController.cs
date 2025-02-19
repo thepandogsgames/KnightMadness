@@ -1,30 +1,42 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Code.Board
 {
-    public class BoardController : MonoBehaviour
+    public class BoardController
     {
-        [SerializeField] private GameObject cellPrefab;
-        private Cell[,] _board;
+        private readonly int _rows;
+        private readonly int _columns;
+        private readonly Cell[,] _board;
 
-        private void Awake()
+
+        private GameObject _cellPrefab;
+        private Spawner.Spawner _spawner;
+
+        public Cell[,] Board => _board;
+
+        
+        public BoardController(GameObject cellPrefab, Spawner.Spawner spawner)
         {
-            _board = new Cell[4, 4];
-            CreateBoard();
-            CenterBoard();
+            _rows = 4;
+            _columns = 4;
+            _board = new Cell[_rows, _columns];
+            _cellPrefab = cellPrefab;
+            _spawner = spawner;
         }
 
-        private void CreateBoard()
+
+        public void CreateBoard()
         {
-            for (int i = 0; i < 4; i++)
+            GameObject board = new GameObject("Board");
+            for (int i = 0; i < _rows; i++)
             {
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < _columns; j++)
                 {
                     Vector3 worldPosition = new Vector3(i, j, 0);
 
-                    GameObject cellObj = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
-
-                    Cell cell = cellObj.GetComponent<Cell>();
+                    Cell cell = _spawner.SpawnCell(_cellPrefab, worldPosition, board.transform);
 
                     cell.BoardPosition = new Vector2Int(i, j);
                     cell.SetColorBasedOnPosition();
@@ -34,10 +46,47 @@ namespace Code.Board
             }
         }
 
-        private void CenterBoard()
+        public Cell GetFreeCell()
         {
-            Vector2 boardCenter = new Vector2((4 - 1) / 2f, (4 - 1) / 2f);
-            transform.position = - (Vector3)boardCenter;
+            List<(Cell cell, float weight)> freeCells = new List<(Cell, float)>();
+
+            for (int i = 0; i < _rows; i++)
+            {
+                for (int j = 0; j < _columns; j++)
+                {
+                    Cell cell = _board[i, j];
+                    if (cell.CurrentPiece is not null)
+                    {
+                        float weight = IsCorner(i, j) ? 2.5f : 7.5f;
+                        freeCells.Add((cell, weight));
+                    }
+                }
+            }
+
+            if (freeCells.Count == 0)
+                return null;
+
+            float totalWeight = freeCells.Sum(entry => entry.weight);
+            float randomValue = Random.Range(0, totalWeight);
+
+            foreach (var entry in freeCells)
+            {
+                randomValue -= entry.weight;
+                if (randomValue <= 0)
+                {
+                    return entry.cell;
+                }
+            }
+
+            return freeCells.Last().cell;
+        }
+
+        private bool IsCorner(int i, int j)
+        {
+            return (i == 0 && j == 0) ||
+                   (i == 0 && j == _columns - 1) ||
+                   (i == _rows - 1 && j == 0) ||
+                   (i == _rows - 1 && j == _columns - 1);
         }
     }
 }
