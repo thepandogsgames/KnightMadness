@@ -6,5 +6,6 @@ namespace Code.Utilities.Enums
         PlayerEats,
         PlayerEaten,
         GameStarted,
+        CellSelected,
     }
 }

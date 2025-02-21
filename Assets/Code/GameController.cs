@@ -1,5 +1,7 @@
 using UnityEngine;
 using Code.Board;
+using Code.Events;
+
 namespace Code
 {
     public class GameController : MonoBehaviour
@@ -9,8 +11,11 @@ namespace Code
         private BoardController _boardController;
         private Spawner.Spawner _spawner;
         private float _time;
+        private IEventManager _eventManager;
+
         void Awake()
         {
+            _eventManager = new EventManager();
             _spawner = new Spawner.Spawner();
             _boardController = new BoardController(cellPrefab, _spawner);
             _boardController.CreateBoard();
@@ -21,7 +26,9 @@ namespace Code
         {
             var cell = _boardController.Board[1, 0];
             Vector3 position = new Vector3(cell.BoardPosition.x, cell.BoardPosition.y, 0);
-            cell.CurrentPiece = _spawner.SpawnPiece(horsePrefab, position, transform);
+            var horse = _spawner.SpawnPiece(horsePrefab, position, transform);
+            horse.CurrentCell = cell;
+            cell.CurrentPiece = horse;
         }
 
         private void Update()
@@ -32,11 +39,21 @@ namespace Code
                 var freeCell = _boardController.GetFreeCell();
                 if (freeCell is not null)
                 {
-                    freeCell.GetComponent<SpriteRenderer>().color = Color.red;
+                    //Possible spawn
                 }
-                _time = 0;
 
+                _time = 0;
             }
+        }
+
+        public IBoard GetBoard()
+        {
+            return _boardController;
+        }
+
+        public IEventManager GetEventManager()
+        {
+            return _eventManager;
         }
     }
 }

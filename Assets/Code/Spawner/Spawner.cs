@@ -13,8 +13,9 @@ namespace Code.Spawner
 
         public IBoardPiece SpawnPiece(GameObject piecePrefab, Vector3 position, Transform parent)
         {
-            return Object.Instantiate(piecePrefab, position, Quaternion.identity, parent)
-                .GetComponent<IBoardPiece>();
+            IBoardPiece piece = Object.Instantiate(piecePrefab, position, Quaternion.identity, parent).GetComponent<IBoardPiece>();
+            
+            return piece;
         }
     }
 }

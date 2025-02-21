@@ -4,19 +4,16 @@ using UnityEngine;
 
 namespace Code.Board
 {
-    public class BoardController
+    public class BoardController : IBoard
     {
         private readonly int _rows;
         private readonly int _columns;
         private readonly Cell[,] _board;
-
-
         private GameObject _cellPrefab;
         private Spawner.Spawner _spawner;
+        public IBoardCell[,] Board => _board;
 
-        public Cell[,] Board => _board;
 
-        
         public BoardController(GameObject cellPrefab, Spawner.Spawner spawner)
         {
             _rows = 4;
@@ -40,13 +37,12 @@ namespace Code.Board
 
                     cell.BoardPosition = new Vector2Int(i, j);
                     cell.SetColorBasedOnPosition();
-
                     _board[i, j] = cell;
                 }
             }
         }
 
-        public Cell GetFreeCell()
+        public IBoardCell GetFreeCell()
         {
             List<(Cell cell, float weight)> freeCells = new List<(Cell, float)>();
 
@@ -63,10 +59,10 @@ namespace Code.Board
                 }
             }
 
-            if (freeCells.Count == 0)
-                return null;
+            if (freeCells.Count == 0) return null;
 
             float totalWeight = freeCells.Sum(entry => entry.weight);
+
             float randomValue = Random.Range(0, totalWeight);
 
             foreach (var entry in freeCells)
