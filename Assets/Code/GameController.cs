@@ -17,16 +17,26 @@ namespace Code
         private IEventManager _eventManager;
         private PawnManager _pawnManager;
 
-        void Awake()
+        private void Awake()
         {
             _eventManager = new EventManager();
             _spawner = new Spawner.Spawner();
             _boardController = new BoardController(cellPrefab, _spawner);
             _boardController.CreateBoard();
             _pawnManager = new PawnManager(_eventManager, pawnPrefab, _spawner);
+            _eventManager.Subscribe(EventTypeEnum.PlayerMoved, OnPlayerMoved);
+            _eventManager.Subscribe(EventTypeEnum.GameStarted, OnGameStarted);
+            _eventManager.Subscribe(EventTypeEnum.PlayerEaten, OnPlayerEaten);
+            _eventManager.Subscribe(EventTypeEnum.PawnsHidden, OnPawnsHidden);
+        }
+
+        
+
+        private void OnGameStarted()
+        {
+            _boardController.ShowBoard();
             SpawnHorse();
             SpawnPawn();
-            _eventManager.Subscribe(EventTypeEnum.PlayerMoved, OnPlayerMoved);
         }
 
         private void SpawnHorse()
@@ -50,6 +60,16 @@ namespace Code
             if (_pawnManager.TryToEat()) return;
             SpawnPawn();
             _eventManager.TriggerEventAsync(EventTypeEnum.HorseCanMove);
+        }
+        
+        private void OnPlayerEaten()
+        {
+            _eventManager.TriggerEventAsync(EventTypeEnum.GameEnded);
+        }
+        
+        private void OnPawnsHidden()
+        {
+            _boardController.HiddeBoard();
         }
 
         public IBoard GetBoard()

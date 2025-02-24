@@ -52,8 +52,8 @@ namespace Code.Pawn
                         .Group(
                             Sequence.Create()
                                 .Chain(Tween.Scale(transform, new Vector3(1.2f, 1.2f, 1.2f), 0.5f))
-                                .Chain(Tween.Scale(transform, new Vector3(0.75f, 0.75f, 0.75f), 0.5f)));
-                    targetCell.CurrentPiece.Eaten();
+                                .Chain(Tween.Scale(transform, new Vector3(0.75f, 0.75f, 0.75f), 0.5f)))
+                        .OnComplete(() => targetCell.CurrentPiece.Eaten());
                     return true;
                 }
             }
@@ -64,7 +64,14 @@ namespace Code.Pawn
         public void Eaten()
         {
             CurrentCell.CurrentPiece = null;
+            CurrentCell = null;
             _eventManager.TriggerEventAsync(EventTypeEnum.PawnEaten, this);
+        }
+
+        public void Hidden()
+        {
+            CurrentCell.CurrentPiece = null;
+            CurrentCell = null;
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Code.Utilities.Enums
         AddPoint,
         HorseCanMove,
         GameStarted,
+        GameEnded,
         CellSelected,
+        PawnsHidden
     }
 }
