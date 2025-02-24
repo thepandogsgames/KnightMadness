@@ -23,7 +23,7 @@ namespace Code.Board
         private void Awake()
         {
             _eventManager = GameObject.FindWithTag("GameController").GetComponent<GameController>().GetEventManager();
-            _eventManager.Subscribe(EventTypeEnum.PlayerMoved, OnPlayerMoved);
+            _eventManager.Subscribe(EventTypeEnum.PlayerMoves, OnPlayerMoves);
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
@@ -38,7 +38,7 @@ namespace Code.Board
             _spriteRenderer.color = Color.blue;
         }
 
-        private void OnPlayerMoved()
+        private void OnPlayerMoves()
         {
             _spriteRenderer.color = _baseColor;
         }

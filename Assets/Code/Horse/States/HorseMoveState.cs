@@ -16,7 +16,8 @@ namespace Code.Horse.States
 
         private IBoardCell _targetCell;
 
-        public HorseMoveState(HorseController horseController,StateMachineController stateMachineController, IEventManager eventManager,
+        public HorseMoveState(HorseController horseController, StateMachineController stateMachineController,
+            IEventManager eventManager,
             Transform horseTransform)
         {
             _horseController = horseController;
@@ -28,7 +29,10 @@ namespace Code.Horse.States
 
         public void OnEnterState()
         {
+            _eventManager.TriggerEventAsync(EventTypeEnum.PlayerMoves);
+            _targetCell.CurrentPiece?.Eaten();
             _targetCell.CurrentPiece = _horseController;
+            _horseController.CurrentCell.CurrentPiece = null;
             _horseController.CurrentCell = _targetCell;
 
             Sequence.Create()
@@ -37,7 +41,7 @@ namespace Code.Horse.States
                 .Group(
                     Sequence.Create()
                         .Chain(Tween.Scale(_horseTransform, new Vector3(1.2f, 1.2f, 1.2f), 0.5f))
-                        .Chain(Tween.Scale(_horseTransform, new Vector3(1f, 1f, 1f), 0.5f)))
+                        .Chain(Tween.Scale(_horseTransform, new Vector3(0.75f, 0.75f, 0.75f), 0.5f)))
                 .OnComplete(OnMoveCompleted);
         }
 
@@ -57,7 +61,7 @@ namespace Code.Horse.States
 
         private void OnMoveCompleted()
         {
-            _stateMachineController.ChangeState(PlayerStatesEnum.SelectState);
+            _stateMachineController.ChangeState(PlayerStatesEnum.WaitState);
         }
     }
 }

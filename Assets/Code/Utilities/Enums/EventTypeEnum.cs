@@ -2,9 +2,12 @@ namespace Code.Utilities.Enums
 {
     public enum EventTypeEnum
     {
+        PlayerMoves,
         PlayerMoved,
-        PlayerEats,
         PlayerEaten,
+        PawnEaten,
+        AddPoint,
+        HorseCanMove,
         GameStarted,
         CellSelected,
     }

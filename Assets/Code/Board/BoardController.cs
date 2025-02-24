@@ -51,11 +51,9 @@ namespace Code.Board
                 for (int j = 0; j < _columns; j++)
                 {
                     Cell cell = _board[i, j];
-                    if (cell.CurrentPiece is not null)
-                    {
-                        float weight = IsCorner(i, j) ? 2.5f : 7.5f;
-                        freeCells.Add((cell, weight));
-                    }
+                    if (cell.CurrentPiece is not null) continue;
+                    float weight = IsCorner(i, j) ? 2.5f : 7.5f;
+                    freeCells.Add((cell, weight));
                 }
             }
 
