@@ -5,6 +5,7 @@ using Code.Components.StateMachine;
 using Code.Events;
 using Code.Horse.States;
 using Code.Utilities.Enums;
+using PrimeTween;
 using UnityEngine;
 
 namespace Code.Horse
@@ -45,8 +46,21 @@ namespace Code.Horse
                     PlayerStatesEnum.SelectState,
                     new HorseSelectionMoveState(_stateMachineController, _eventManager, this, _board)
                 },
-                { PlayerStatesEnum.MoveState, new HorseMoveState(this,_stateMachineController, _eventManager, transform) }
+                {
+                    PlayerStatesEnum.MoveState,
+                    new HorseMoveState(this, _stateMachineController, _eventManager, transform)
+                },
+                {
+                    PlayerStatesEnum.WaitState,
+                    new HorseWaitState(_stateMachineController, _eventManager)
+                }
             });
+        }
+
+        public void Eaten()
+        {
+            Tween.Scale(transform, Vector3.zero, 0.5f).OnComplete(() => gameObject.SetActive(false));
+            _eventManager.TriggerEventAsync(EventTypeEnum.PlayerEaten);
         }
     }
 }

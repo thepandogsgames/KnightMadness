@@ -10,14 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 7661842320617443002}
   - component: {fileID: 707407121477112859}
-  - component: {fileID: -5640673693115949878}
+  - component: {fileID: 1546674387851347298}
   m_Layer: 0
   m_Name: PawnPrefab
   m_TagString: Piece
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7661842320617443002
 Transform:
   m_ObjectHideFlags: 0
@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -88,7 +88,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-5640673693115949878
+--- !u!114 &1546674387851347298
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,6 +97,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1738533563328776350}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 660712b056f5224408b7fdaed77d1ddb, type: 3}
+  m_Script: {fileID: 11500000, guid: 9e506adb7de8154448e50c97799eefad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
