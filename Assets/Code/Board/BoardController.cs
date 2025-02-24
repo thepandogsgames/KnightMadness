@@ -13,6 +13,7 @@ namespace Code.Board
         private Spawner.Spawner _spawner;
         public IBoardCell[,] Board => _board;
 
+        private GameObject _boardParent;
 
         public BoardController(GameObject cellPrefab, Spawner.Spawner spawner)
         {
@@ -26,20 +27,31 @@ namespace Code.Board
 
         public void CreateBoard()
         {
-            GameObject board = new GameObject("Board");
+            _boardParent = new GameObject("Board");
             for (int i = 0; i < _rows; i++)
             {
                 for (int j = 0; j < _columns; j++)
                 {
                     Vector3 worldPosition = new Vector3(i, j, 0);
 
-                    Cell cell = _spawner.SpawnCell(_cellPrefab, worldPosition, board.transform);
+                    Cell cell = _spawner.SpawnCell(_cellPrefab, worldPosition, _boardParent.transform);
 
                     cell.BoardPosition = new Vector2Int(i, j);
                     cell.SetColorBasedOnPosition();
                     _board[i, j] = cell;
                 }
             }
+            _boardParent.SetActive(false);
+        }
+
+        public void ShowBoard()
+        {
+            _boardParent.SetActive(true);
+        }
+
+        public void HiddeBoard()
+        {
+            _boardParent.SetActive(false);
         }
 
         public IBoardCell GetFreeCell()

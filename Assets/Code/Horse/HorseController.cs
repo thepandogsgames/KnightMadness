@@ -59,8 +59,10 @@ namespace Code.Horse
 
         public void Eaten()
         {
-            Tween.Scale(transform, Vector3.zero, 0.5f).OnComplete(() => gameObject.SetActive(false));
             _eventManager.TriggerEventAsync(EventTypeEnum.PlayerEaten);
+            Tween.Scale(transform, Vector3.zero, 0.5f).OnComplete(() => gameObject.SetActive(false));
+            _currentCell.CurrentPiece = null;
+            _currentCell = null;
         }
     }
 }
