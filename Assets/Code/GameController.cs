@@ -20,6 +20,7 @@ namespace Code
         private PawnManager _pawnManager;
         private IBoardPiece _horseInstance;
         private int _movesCount;
+        private bool _isGamePlaying = false;
 
         private void Awake()
         {
@@ -39,6 +40,7 @@ namespace Code
 
         private void OnGameStarted()
         {
+            _isGamePlaying = true;
             _boardController.ShowBoard();
             PlaceHorse();
             SpawnPawn();
@@ -84,6 +86,8 @@ namespace Code
 
         private void OnPlayerEaten()
         {
+            _isGamePlaying = false;
+            _boardController.ClearBoard();
             _eventManager.TriggerEventAsync(EventTypeEnum.GameEnded);
         }
 
@@ -94,6 +98,7 @@ namespace Code
 
         private void OnNoActivePawns()
         {
+            if (!_isGamePlaying) return;
             Debug.Log("No active pawns in the game");
             SpawnPawn();
             _movesCount = 0;

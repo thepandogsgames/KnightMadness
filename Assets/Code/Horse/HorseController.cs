@@ -7,6 +7,7 @@ using Code.Horse.States;
 using Code.Utilities.Enums;
 using PrimeTween;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 namespace Code.Horse
 {
@@ -62,10 +63,10 @@ namespace Code.Horse
 
         public void Eaten()
         {
+            // _currentCell.CurrentPiece = null;
+            // _currentCell = null;
             Tween.Scale(_transform, Vector3.zero, 0.5f)
                 .OnComplete(() => _eventManager.TriggerEventAsync(EventTypeEnum.PlayerEaten), false);
-            _currentCell.CurrentPiece = null;
-            _currentCell = null;
         }
 
         public void Reset()
