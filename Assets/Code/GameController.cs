@@ -1,6 +1,7 @@
 using UnityEngine;
 using Code.Board;
 using Code.Events;
+using Code.Horse;
 using Code.Utilities.Enums;
 using Code.Pawn;
 
@@ -11,11 +12,14 @@ namespace Code
         [SerializeField] private GameObject horsePrefab;
         [SerializeField] private GameObject pawnPrefab;
         [SerializeField] private GameObject cellPrefab;
+        [SerializeField] private int movesToSpawnPawn;
         private BoardController _boardController;
         private Spawner.Spawner _spawner;
         private float _time;
         private IEventManager _eventManager;
         private PawnManager _pawnManager;
+        private IBoardPiece _horseInstance;
+        private int _movesCount;
 
         private void Awake()
         {
@@ -28,24 +32,34 @@ namespace Code
             _eventManager.Subscribe(EventTypeEnum.GameStarted, OnGameStarted);
             _eventManager.Subscribe(EventTypeEnum.PlayerEaten, OnPlayerEaten);
             _eventManager.Subscribe(EventTypeEnum.PawnsHidden, OnPawnsHidden);
+            _eventManager.Subscribe(EventTypeEnum.NoActivePawns, OnNoActivePawns);
+            SpawnHorse();
         }
 
-        
 
         private void OnGameStarted()
         {
             _boardController.ShowBoard();
-            SpawnHorse();
+            PlaceHorse();
             SpawnPawn();
+            _eventManager.TriggerEventAsync(EventTypeEnum.HorseCanMove);
         }
 
         private void SpawnHorse()
         {
+            _horseInstance = _spawner.SpawnPiece(horsePrefab, Vector3.zero, transform);
+        }
+
+        private void PlaceHorse()
+        {
+            _movesCount = 0;
             var cell = _boardController.Board[1, 0];
             Vector3 position = new Vector3(cell.BoardPosition.x, cell.BoardPosition.y, 0);
-            var horse = _spawner.SpawnPiece(horsePrefab, position, transform);
-            horse.CurrentCell = cell;
-            cell.CurrentPiece = horse;
+            var horse = _horseInstance as HorseController;
+            horse!.transform.position = position;
+            _horseInstance.Reset();
+            _horseInstance.CurrentCell = cell;
+            cell.CurrentPiece = _horseInstance;
         }
 
         private void SpawnPawn()
@@ -58,18 +72,30 @@ namespace Code
         private void OnPlayerMoved()
         {
             if (_pawnManager.TryToEat()) return;
-            SpawnPawn();
+            _movesCount++;
+            if (_movesCount >= movesToSpawnPawn)
+            {
+                SpawnPawn();
+                _movesCount = 0;
+            }
+
             _eventManager.TriggerEventAsync(EventTypeEnum.HorseCanMove);
         }
-        
+
         private void OnPlayerEaten()
         {
             _eventManager.TriggerEventAsync(EventTypeEnum.GameEnded);
         }
-        
+
         private void OnPawnsHidden()
         {
             _boardController.HiddeBoard();
+        }
+
+        private void OnNoActivePawns()
+        {
+            SpawnPawn();
+            _movesCount = 0;
         }
 
         public IBoard GetBoard()

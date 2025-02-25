@@ -16,11 +16,13 @@ namespace Code.Horse
         private IBoard _board;
         private StateMachineController _stateMachineController;
         private IBoardCell _currentCell;
+        private Transform _transform;
 
         public IBoardCell CurrentCell { get; set; }
 
         private void Awake()
         {
+            _transform = transform;
             var gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
             _eventManager = gameController.GetEventManager();
             _board = gameController.GetBoard();
@@ -30,11 +32,12 @@ namespace Code.Horse
 
         private void Start()
         {
-            _stateMachineController.ChangeState(PlayerStatesEnum.SelectState);
+            _stateMachineController.ChangeState(PlayerStatesEnum.WaitState);
         }
 
         private void Update()
         {
+            if (!isActiveAndEnabled) return;
             _stateMachineController.UpdateMachine();
         }
 
@@ -59,10 +62,16 @@ namespace Code.Horse
 
         public void Eaten()
         {
-            _eventManager.TriggerEventAsync(EventTypeEnum.PlayerEaten);
-            Tween.Scale(transform, Vector3.zero, 0.5f).OnComplete(() => gameObject.SetActive(false));
+            Tween.Scale(_transform, Vector3.zero, 0.5f)
+                .OnComplete(() => _eventManager.TriggerEventAsync(EventTypeEnum.PlayerEaten), false);
             _currentCell.CurrentPiece = null;
             _currentCell = null;
+        }
+
+        public void Reset()
+        {
+            gameObject.SetActive(true);
+            Tween.Scale(_transform, new Vector3(0.75f, 0.75f, 0.75f), 0.5f);
         }
     }
 }

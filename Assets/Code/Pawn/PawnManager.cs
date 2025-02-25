@@ -65,6 +65,7 @@ namespace Code.Pawn
         {
             _eventManager.TriggerEventAsync(EventTypeEnum.AddPoint);
             HiddePawn(pawn);
+            if (_activePawns.Count == 0) _eventManager.TriggerEventAsync(EventTypeEnum.NoActivePawns);
         }
 
         public bool TryToEat()

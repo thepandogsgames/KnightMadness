@@ -1,3 +1,4 @@
+using System;
 using Code.Board;
 using Code.Events;
 using Code.Horse;
@@ -72,6 +73,11 @@ namespace Code.Pawn
         {
             CurrentCell.CurrentPiece = null;
             CurrentCell = null;
+        }
+
+        public void Reset()
+        {
+            
         }
     }
 }
