@@ -94,6 +94,7 @@ namespace Code
 
         private void OnNoActivePawns()
         {
+            Debug.Log("No active pawns in the game");
             SpawnPawn();
             _movesCount = 0;
         }
