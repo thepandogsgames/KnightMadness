@@ -14,6 +14,7 @@ namespace Code
         [SerializeField] private GameObject cellPrefab;
         [SerializeField] private int movesToSpawnPawn;
         [SerializeField] private int movesToSpawnPawnSecondary;
+        [Tooltip("-1 to disable")]
         [SerializeField] private int pawnsEatenToActivateAuxiliarySpawn;
         private BoardController _boardController;
         private Spawner.Spawner _spawner;
@@ -84,7 +85,7 @@ namespace Code
             if (_pawnManager.TryToEat()) return;
 
             CheckAndSpawnPawn(ref _movesCount, movesToSpawnPawn);
-            
+
             CheckAndSpawnPawn(ref _movesCountAuxiliary, movesToSpawnPawnSecondary,
                 _pawnsEaten,
                 pawnsEatenToActivateAuxiliarySpawn);
@@ -95,7 +96,7 @@ namespace Code
         private void CheckAndSpawnPawn(ref int moveCounter, int movesRequired, int conditionCounter = 0,
             int conditionThreshold = 0)
         {
-            if (conditionCounter < conditionThreshold) return;
+            if (conditionThreshold != -1 && conditionCounter < conditionThreshold) return;
 
             moveCounter++;
             if (moveCounter < movesRequired) return;
