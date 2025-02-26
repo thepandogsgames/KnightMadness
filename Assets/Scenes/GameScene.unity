@@ -737,8 +737,8 @@ MonoBehaviour:
   pawnPrefab: {fileID: 1738533563328776350, guid: c85bcc3a3b3ecdf4483fef310afa5d5f, type: 3}
   cellPrefab: {fileID: 1738533563328776350, guid: 23469c25e7167194e8e7d3ebe6a2bb1f, type: 3}
   movesToSpawnPawn: 2
-  movesToSpawnPawnSecondary: 1
-  pawnsEatenToActivateAuxiliarySpawn: 2
+  movesToSpawnPawnSecondary: 5
+  pawnsEatenToActivateAuxiliarySpawn: 5
 --- !u!1 &1434473489
 GameObject:
   m_ObjectHideFlags: 0
