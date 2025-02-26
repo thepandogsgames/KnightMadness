@@ -13,6 +13,8 @@ namespace Code
         [SerializeField] private GameObject pawnPrefab;
         [SerializeField] private GameObject cellPrefab;
         [SerializeField] private int movesToSpawnPawn;
+        [SerializeField] private int movesToSpawnPawnSecondary;
+        [SerializeField] private int pawnsEatenToActivateAuxiliarySpawn;
         private BoardController _boardController;
         private Spawner.Spawner _spawner;
         private float _time;
@@ -20,7 +22,9 @@ namespace Code
         private PawnManager _pawnManager;
         private IBoardPiece _horseInstance;
         private int _movesCount;
-        private bool _isGamePlaying = false;
+        private int _movesCountAuxiliary;
+        private int _pawnsEaten;
+        private bool _isGamePlaying;
 
         private void Awake()
         {
@@ -34,6 +38,7 @@ namespace Code
             _eventManager.Subscribe(EventTypeEnum.PlayerEaten, OnPlayerEaten);
             _eventManager.Subscribe(EventTypeEnum.PawnsHidden, OnPawnsHidden);
             _eventManager.Subscribe(EventTypeEnum.NoActivePawns, OnNoActivePawns);
+            _eventManager.Subscribe<IBoardPiece>(EventTypeEnum.PawnEaten, OnPawnEaten);
             SpawnHorse();
         }
 
@@ -41,6 +46,9 @@ namespace Code
         private void OnGameStarted()
         {
             _isGamePlaying = true;
+            _movesCount = 0;
+            _movesCountAuxiliary = 0;
+            _pawnsEaten = 0;
             _boardController.ShowBoard();
             PlaceHorse();
             SpawnPawn();
@@ -74,14 +82,26 @@ namespace Code
         private void OnPlayerMoved()
         {
             if (_pawnManager.TryToEat()) return;
-            _movesCount++;
-            if (_movesCount >= movesToSpawnPawn)
-            {
-                SpawnPawn();
-                _movesCount = 0;
-            }
+
+            CheckAndSpawnPawn(ref _movesCount, movesToSpawnPawn);
+            
+            CheckAndSpawnPawn(ref _movesCountAuxiliary, movesToSpawnPawnSecondary,
+                _pawnsEaten,
+                pawnsEatenToActivateAuxiliarySpawn);
 
             _eventManager.TriggerEventAsync(EventTypeEnum.HorseCanMove);
+        }
+
+        private void CheckAndSpawnPawn(ref int moveCounter, int movesRequired, int conditionCounter = 0,
+            int conditionThreshold = 0)
+        {
+            if (conditionCounter < conditionThreshold) return;
+
+            moveCounter++;
+            if (moveCounter < movesRequired) return;
+
+            moveCounter = 0;
+            SpawnPawn();
         }
 
         private void OnPlayerEaten()
@@ -99,9 +119,13 @@ namespace Code
         private void OnNoActivePawns()
         {
             if (!_isGamePlaying) return;
-            Debug.Log("No active pawns in the game");
             SpawnPawn();
             _movesCount = 0;
+        }
+
+        private void OnPawnEaten(IBoardPiece pawn)
+        {
+            _pawnsEaten++;
         }
 
         public IBoard GetBoard()

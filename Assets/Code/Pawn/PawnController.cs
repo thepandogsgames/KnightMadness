@@ -1,4 +1,3 @@
-using System;
 using Code.Board;
 using Code.Events;
 using Code.Horse;

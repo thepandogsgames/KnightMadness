@@ -62,7 +62,6 @@ namespace Code.Pawn
 
         private void OnPawnEaten(PawnController pawn)
         {
-            Debug.Log("Pawn eaten");
             _eventManager.TriggerEventAsync(EventTypeEnum.AddPoint);
             HiddePawn(pawn);
         }
@@ -94,7 +93,6 @@ namespace Code.Pawn
         {
             _pool.Enqueue(pawn);
             _activePawns.Remove(pawn);
-            Debug.Log("pawns remaining " + _activePawns.Count);
             if (_activePawns.Count == 0) _eventManager.TriggerEventAsync(EventTypeEnum.NoActivePawns);
             Tween.Scale(pawn.transform, new Vector3(_invisibleScale, _invisibleScale, _invisibleScale), 0.5f)
                 .OnComplete(() => pawn.gameObject.SetActive(false));
