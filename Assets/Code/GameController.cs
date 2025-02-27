@@ -4,6 +4,7 @@ using Code.Events;
 using Code.Horse;
 using Code.Utilities.Enums;
 using Code.Pawn;
+using Code.Persistence;
 
 namespace Code
 {
@@ -22,10 +23,13 @@ namespace Code
         private IEventManager _eventManager;
         private PawnManager _pawnManager;
         private IBoardPiece _horseInstance;
+        private LocalPersistence _localPersistence;
         private int _movesCount;
         private int _movesCountAuxiliary;
         private int _pawnsEaten;
         private bool _isGamePlaying;
+
+        private int _maxScore;
 
         private void Awake()
         {
@@ -34,6 +38,8 @@ namespace Code
             _boardController = new BoardController(cellPrefab, _spawner);
             _boardController.CreateBoard();
             _pawnManager = new PawnManager(_eventManager, pawnPrefab, _spawner);
+            _localPersistence = new LocalPersistence();
+            _maxScore = _localPersistence.GetMaxScore();
             _eventManager.Subscribe(EventTypeEnum.PlayerMoved, OnPlayerMoved);
             _eventManager.Subscribe(EventTypeEnum.GameStarted, OnGameStarted);
             _eventManager.Subscribe(EventTypeEnum.PlayerEaten, OnPlayerEaten);
@@ -108,6 +114,8 @@ namespace Code
         private void OnPlayerEaten()
         {
             _isGamePlaying = false;
+            if (_maxScore < _pawnsEaten) _maxScore = _pawnsEaten;
+            _localPersistence.SetMaxScore(_maxScore);
             _boardController.ClearBoard();
             _eventManager.TriggerEventAsync(EventTypeEnum.GameEnded);
         }
@@ -137,6 +145,11 @@ namespace Code
         public IEventManager GetEventManager()
         {
             return _eventManager;
+        }
+
+        public LocalPersistence GetLocalPersistence()
+        {
+            return _localPersistence;
         }
 
         public Spawner.Spawner GetSpawner()
