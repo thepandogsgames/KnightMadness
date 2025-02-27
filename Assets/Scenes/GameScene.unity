@@ -1124,6 +1124,7 @@ MonoBehaviour:
   movesToSpawnPawn: 2
   movesToSpawnPawnSecondary: 5
   pawnsEatenToActivateAuxiliarySpawn: 5
+  audioMixer: {fileID: 24100000, guid: 1ad09910876976d41bdfe7c97270714e, type: 2}
 --- !u!1 &1434473489
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,23 +1,27 @@
 using System;
 using System.Collections.Generic;
 using Code.Board;
+using Code.Components.Audio;
 using Code.Components.StateMachine;
 using Code.Events;
 using Code.Horse.States;
 using Code.Utilities.Enums;
 using PrimeTween;
 using UnityEngine;
-using Debug = System.Diagnostics.Debug;
 
 namespace Code.Horse
 {
     public class HorseController : MonoBehaviour, IBoardPiece
     {
+        [SerializeField] private AudioClip eatedSound;
+        [SerializeField] private AudioClip moveSound;
+
         private IEventManager _eventManager;
         private IBoard _board;
         private StateMachineController _stateMachineController;
         private IBoardCell _currentCell;
         private Transform _transform;
+        private IAudioController _audioController;
 
         public IBoardCell CurrentCell { get; set; }
 
@@ -26,6 +30,7 @@ namespace Code.Horse
             _transform = transform;
             var gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
             _eventManager = gameController.GetEventManager();
+            _audioController = gameController.GetAudioController();
             _board = gameController.GetBoard();
             _stateMachineController = new StateMachineController();
             ConfigureStates();
@@ -52,7 +57,8 @@ namespace Code.Horse
                 },
                 {
                     PlayerStatesEnum.MoveState,
-                    new HorseMoveState(this, _stateMachineController, _eventManager, transform)
+                    new HorseMoveState(this, _stateMachineController, _eventManager, _audioController, transform,
+                        moveSound)
                 },
                 {
                     PlayerStatesEnum.WaitState,
@@ -63,8 +69,7 @@ namespace Code.Horse
 
         public void Eaten()
         {
-            // _currentCell.CurrentPiece = null;
-            // _currentCell = null;
+            _audioController.PlaySoundWithRandomPitch(eatedSound, false, 0.8f, 1.2f);
             Tween.Scale(_transform, Vector3.zero, 0.5f)
                 .OnComplete(() => _eventManager.TriggerEventAsync(EventTypeEnum.PlayerEaten), false);
         }

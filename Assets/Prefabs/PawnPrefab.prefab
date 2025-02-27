@@ -100,3 +100,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e506adb7de8154448e50c97799eefad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eatedSound: {fileID: 8300000, guid: e06f1ccfdbbfa4f428f2b580f65f2d6d, type: 3}
+  moveSound: {fileID: 8300000, guid: ce6eccb7ef7329f41a4ccdd13cd18a26, type: 3}

@@ -1,4 +1,5 @@
 using Code.Board;
+using Code.Components.Audio;
 using Code.Components.StateMachine;
 using Code.Events;
 using Code.Utilities.Enums;
@@ -12,23 +13,28 @@ namespace Code.Horse.States
         private readonly HorseController _horseController;
         private readonly StateMachineController _stateMachineController;
         private readonly IEventManager _eventManager;
+        private readonly IAudioController _audioController;
         private readonly Transform _horseTransform;
+        private AudioClip _moveSound;
 
         private IBoardCell _targetCell;
 
         public HorseMoveState(HorseController horseController, StateMachineController stateMachineController,
-            IEventManager eventManager,
-            Transform horseTransform)
+            IEventManager eventManager, IAudioController audioController, Transform horseTransform,
+            AudioClip moveSound)
         {
             _horseController = horseController;
             _stateMachineController = stateMachineController;
             _eventManager = eventManager;
             _horseTransform = horseTransform;
+            _audioController = audioController;
+            _moveSound = moveSound;
             _eventManager.Subscribe<IBoardCell>(EventTypeEnum.CellSelected, OnCellSelected);
         }
 
         public void OnEnterState()
         {
+            _audioController.PlaySoundWithRandomPitch(_moveSound, false, 0.8f, 1.2f);
             _eventManager.TriggerEventAsync(EventTypeEnum.PlayerMoves);
             _targetCell.CurrentPiece?.Eaten();
             _targetCell.CurrentPiece = _horseController;
@@ -37,11 +43,11 @@ namespace Code.Horse.States
 
             Sequence.Create()
                 .Group(Tween.Position(_horseTransform,
-                    new Vector3(_targetCell.BoardPosition.x, _targetCell.BoardPosition.y, 0), 1))
+                    new Vector3(_targetCell.BoardPosition.x, _targetCell.BoardPosition.y, 0), 0.3f))
                 .Group(
                     Sequence.Create()
-                        .Chain(Tween.Scale(_horseTransform, new Vector3(1.2f, 1.2f, 1.2f), 0.5f))
-                        .Chain(Tween.Scale(_horseTransform, new Vector3(0.75f, 0.75f, 0.75f), 0.5f)))
+                        .Chain(Tween.Scale(_horseTransform, new Vector3(1.2f, 1.2f, 1.2f), 0.15f))
+                        .Chain(Tween.Scale(_horseTransform, new Vector3(0.75f, 0.75f, 0.75f), 0.15f)))
                 .OnComplete(OnMoveCompleted);
         }
 

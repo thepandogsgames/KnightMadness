@@ -1,10 +1,12 @@
 using UnityEngine;
 using Code.Board;
+using Code.Components.Audio;
 using Code.Events;
 using Code.Horse;
 using Code.Utilities.Enums;
 using Code.Pawn;
 using Code.Persistence;
+using UnityEngine.Audio;
 
 namespace Code
 {
@@ -17,6 +19,8 @@ namespace Code
         [SerializeField] private int movesToSpawnPawnSecondary;
         [Tooltip("-1 to disable")]
         [SerializeField] private int pawnsEatenToActivateAuxiliarySpawn;
+
+        [Header("Audio")] [SerializeField] private AudioMixer audioMixer;
         private BoardController _boardController;
         private Spawner.Spawner _spawner;
         private float _time;
@@ -24,6 +28,7 @@ namespace Code
         private PawnManager _pawnManager;
         private IBoardPiece _horseInstance;
         private LocalPersistence _localPersistence;
+        private IAudioController _audioController;
         private int _movesCount;
         private int _movesCountAuxiliary;
         private int _pawnsEaten;
@@ -39,6 +44,7 @@ namespace Code
             _boardController.CreateBoard();
             _pawnManager = new PawnManager(_eventManager, pawnPrefab, _spawner);
             _localPersistence = new LocalPersistence();
+            _audioController = new AudioController(audioMixer);
             _maxScore = _localPersistence.GetMaxScore();
             _eventManager.Subscribe(EventTypeEnum.PlayerMoved, OnPlayerMoved);
             _eventManager.Subscribe(EventTypeEnum.GameStarted, OnGameStarted);
@@ -155,6 +161,11 @@ namespace Code
         public Spawner.Spawner GetSpawner()
         {
             return _spawner;
+        }
+
+        public IAudioController GetAudioController()
+        {
+            return _audioController;
         }
     }
 }
