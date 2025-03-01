@@ -5,7 +5,6 @@ using Code.Events;
 using Code.Utilities.Enums;
 using PrimeTween;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Code.Pawn
 {
@@ -16,7 +15,7 @@ namespace Code.Pawn
         private readonly IEventManager _eventManager;
         private readonly List<PawnController> _activePawns;
         private Queue<PawnController> _pool;
-        private GameObject parent;
+        private GameObject _parent;
         private readonly float _invisibleScale = 0f;
         private readonly float _visibleScale = 0.75f;
 
@@ -25,7 +24,7 @@ namespace Code.Pawn
             _eventManager = eventManager;
             _pawnPrefab = pawnPrefab;
             _spawner = spawner;
-            parent = new GameObject("PawnPool");
+            _parent = new GameObject("PawnPool");
             _activePawns = new List<PawnController>();
             _pool = new Queue<PawnController>();
             _eventManager.Subscribe<PawnController>(EventTypeEnum.PawnEaten, OnPawnEaten);
@@ -45,13 +44,13 @@ namespace Code.Pawn
 
         private IBoardPiece SpawnPawn()
         {
-            return _spawner.SpawnPiece(_pawnPrefab, Vector3.zero, parent.transform);
+            return _spawner.SpawnPiece(_pawnPrefab, Vector3.zero, _parent.transform);
         }
 
         public IBoardPiece GetPawn(IBoardCell cell)
         {
             var pawn = _pool.Count > 0 ? _pool.Dequeue() : SpawnPawn() as PawnController;
-            pawn.gameObject.SetActive(true);
+            pawn!.gameObject.SetActive(true);
             _activePawns.Add(pawn);
             pawn.CurrentCell = cell;
             cell.CurrentPiece = pawn;
@@ -94,6 +93,7 @@ namespace Code.Pawn
         {
             _pool.Enqueue(pawn);
             _activePawns.Remove(pawn);
+            if (_activePawns.Count == 0) _eventManager.TriggerEventAsync(EventTypeEnum.NoActivePawns);
             Tween.Scale(pawn.transform, new Vector3(_invisibleScale, _invisibleScale, _invisibleScale), 0.5f)
                 .OnComplete(() => pawn.gameObject.SetActive(false));
             pawn.Hidden();

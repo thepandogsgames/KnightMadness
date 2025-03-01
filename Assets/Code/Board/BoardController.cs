@@ -94,5 +94,13 @@ namespace Code.Board
                    (i == _rows - 1 && j == 0) ||
                    (i == _rows - 1 && j == _columns - 1);
         }
+
+        public void ClearBoard()
+        {
+            foreach (var boardCell in _board)
+            {
+                boardCell.ClearCell();
+            }
+        }
     }
 }

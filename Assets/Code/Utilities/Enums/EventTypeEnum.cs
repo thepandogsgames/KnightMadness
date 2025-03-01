@@ -11,6 +11,7 @@ namespace Code.Utilities.Enums
         GameStarted,
         GameEnded,
         CellSelected,
+        NoActivePawns,
         PawnsHidden
     }
 }

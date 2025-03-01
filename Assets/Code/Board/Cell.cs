@@ -38,6 +38,11 @@ namespace Code.Board
             _spriteRenderer.color = Color.blue;
         }
 
+        public void ClearCell()
+        {
+            CurrentPiece = null;
+        }
+
         private void OnPlayerMoves()
         {
             _spriteRenderer.color = _baseColor;

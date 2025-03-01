@@ -1,4 +1,5 @@
 using Code.Board;
+using Code.Components.Audio;
 using Code.Events;
 using Code.Horse;
 using Code.Utilities.Enums;
@@ -9,10 +10,14 @@ namespace Code.Pawn
 {
     public class PawnController : MonoBehaviour, IBoardPiece
     {
+        [SerializeField] private AudioClip eatedSound;
+        [SerializeField] private AudioClip moveSound;
+        
         private IBoard _board;
         private IEventManager _eventManager;
         public IBoardCell CurrentCell { get; set; }
         private SpriteRenderer _spriteRenderer;
+        private IAudioController _audioController;
 
 
         private readonly Vector2Int[] _eatPattern = new Vector2Int[]
@@ -26,6 +31,7 @@ namespace Code.Pawn
             var gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
             _board = gameController.GetBoard();
             _eventManager = gameController.GetEventManager();
+            _audioController = gameController.GetAudioController();
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
@@ -45,14 +51,15 @@ namespace Code.Pawn
                 IBoardCell targetCell = _board.Board[newPos.x, newPos.y];
                 if (targetCell.CurrentPiece is HorseController)
                 {
+                    _audioController.PlaySoundWithRandomPitch(moveSound, false, 0.8f, 1.2f);
                     _spriteRenderer.sortingOrder = 2;
                     Sequence.Create()
                         .Group(Tween.Position(transform,
-                            new Vector3(targetCell.BoardPosition.x, targetCell.BoardPosition.y, 0), 1))
+                            new Vector3(targetCell.BoardPosition.x, targetCell.BoardPosition.y, 0), 0.3f))
                         .Group(
                             Sequence.Create()
-                                .Chain(Tween.Scale(transform, new Vector3(1.2f, 1.2f, 1.2f), 0.5f))
-                                .Chain(Tween.Scale(transform, new Vector3(0.75f, 0.75f, 0.75f), 0.5f)))
+                                .Chain(Tween.Scale(transform, new Vector3(1.2f, 1.2f, 1.2f), 0.15f))
+                                .Chain(Tween.Scale(transform, new Vector3(0.75f, 0.75f, 0.75f), 0.15f)))
                         .OnComplete(() => targetCell.CurrentPiece.Eaten());
                     return true;
                 }
@@ -63,6 +70,7 @@ namespace Code.Pawn
 
         public void Eaten()
         {
+            _audioController.PlaySoundWithRandomPitch(eatedSound, false, 0.8f, 1.2f);
             CurrentCell.CurrentPiece = null;
             CurrentCell = null;
             _eventManager.TriggerEventAsync(EventTypeEnum.PawnEaten, this);
@@ -72,6 +80,11 @@ namespace Code.Pawn
         {
             CurrentCell.CurrentPiece = null;
             CurrentCell = null;
+        }
+
+        public void Reset()
+        {
+            //No needed
         }
     }
 }

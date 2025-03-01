@@ -17,6 +17,8 @@ namespace Code.UI
             _eventManager = gameController.GetEventManager();
             _eventManager.Subscribe(EventTypeEnum.AddPoint, OnScoreAdded);
             _eventManager.Subscribe(EventTypeEnum.GameStarted, OnGameStarted);
+            _eventManager.Subscribe(EventTypeEnum.PlayerEaten, OnPlayerEaten);
+            gameObject.SetActive(false);
         }
 
         private void OnScoreAdded()
@@ -29,6 +31,12 @@ namespace Code.UI
         {
             _score = 0;
             scoreText.text = _score.ToString();
+            gameObject.SetActive(true);
+        }
+
+        private void OnPlayerEaten()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

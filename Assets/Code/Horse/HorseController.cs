@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Code.Board;
+using Code.Components.Audio;
 using Code.Components.StateMachine;
 using Code.Events;
 using Code.Horse.States;
@@ -12,17 +13,24 @@ namespace Code.Horse
 {
     public class HorseController : MonoBehaviour, IBoardPiece
     {
+        [SerializeField] private AudioClip eatedSound;
+        [SerializeField] private AudioClip moveSound;
+
         private IEventManager _eventManager;
         private IBoard _board;
         private StateMachineController _stateMachineController;
         private IBoardCell _currentCell;
+        private Transform _transform;
+        private IAudioController _audioController;
 
         public IBoardCell CurrentCell { get; set; }
 
         private void Awake()
         {
+            _transform = transform;
             var gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
             _eventManager = gameController.GetEventManager();
+            _audioController = gameController.GetAudioController();
             _board = gameController.GetBoard();
             _stateMachineController = new StateMachineController();
             ConfigureStates();
@@ -30,11 +38,12 @@ namespace Code.Horse
 
         private void Start()
         {
-            _stateMachineController.ChangeState(PlayerStatesEnum.SelectState);
+            _stateMachineController.ChangeState(PlayerStatesEnum.WaitState);
         }
 
         private void Update()
         {
+            if (!isActiveAndEnabled) return;
             _stateMachineController.UpdateMachine();
         }
 
@@ -48,7 +57,8 @@ namespace Code.Horse
                 },
                 {
                     PlayerStatesEnum.MoveState,
-                    new HorseMoveState(this, _stateMachineController, _eventManager, transform)
+                    new HorseMoveState(this, _stateMachineController, _eventManager, _audioController, transform,
+                        moveSound)
                 },
                 {
                     PlayerStatesEnum.WaitState,
@@ -59,10 +69,15 @@ namespace Code.Horse
 
         public void Eaten()
         {
-            _eventManager.TriggerEventAsync(EventTypeEnum.PlayerEaten);
-            Tween.Scale(transform, Vector3.zero, 0.5f).OnComplete(() => gameObject.SetActive(false));
-            _currentCell.CurrentPiece = null;
-            _currentCell = null;
+            _audioController.PlaySoundWithRandomPitch(eatedSound, false, 0.8f, 1.2f);
+            Tween.Scale(_transform, Vector3.zero, 0.5f)
+                .OnComplete(() => _eventManager.TriggerEventAsync(EventTypeEnum.PlayerEaten), false);
+        }
+
+        public void Reset()
+        {
+            gameObject.SetActive(true);
+            Tween.Scale(_transform, new Vector3(0.75f, 0.75f, 0.75f), 0.5f);
         }
     }
 }
