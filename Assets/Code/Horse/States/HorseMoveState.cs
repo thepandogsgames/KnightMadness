@@ -53,7 +53,6 @@ namespace Code.Horse.States
 
         public void OnExitState()
         {
-            _eventManager.TriggerEventAsync(EventTypeEnum.PlayerMoved);
         }
 
         public void OnUpdateState()
@@ -67,6 +66,7 @@ namespace Code.Horse.States
 
         private void OnMoveCompleted()
         {
+            _eventManager.TriggerEventAsync(EventTypeEnum.PlayerMoved);
             _stateMachineController.ChangeState(PlayerStatesEnum.WaitState);
         }
     }

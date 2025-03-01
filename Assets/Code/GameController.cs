@@ -17,10 +17,13 @@ namespace Code
         [SerializeField] private GameObject cellPrefab;
         [SerializeField] private int movesToSpawnPawn;
         [SerializeField] private int movesToSpawnPawnSecondary;
-        [Tooltip("-1 to disable")]
-        [SerializeField] private int pawnsEatenToActivateAuxiliarySpawn;
 
+        [Tooltip("-1 to disable")] [SerializeField]
+        private int pawnsEatenToActivateAuxiliarySpawn;
+
+        [SerializeField] private GameObject glovesGameObject;
         [Header("Audio")] [SerializeField] private AudioMixer audioMixer;
+
         private BoardController _boardController;
         private Spawner.Spawner _spawner;
         private float _time;
@@ -35,6 +38,8 @@ namespace Code
         private bool _isGamePlaying;
 
         private int _maxScore;
+
+        private bool _extraPawnSpawned;
 
         private void Awake()
         {
@@ -58,11 +63,13 @@ namespace Code
 
         private void OnGameStarted()
         {
+            _extraPawnSpawned = false;
             _isGamePlaying = true;
             _movesCount = 0;
             _movesCountAuxiliary = 0;
             _pawnsEaten = 0;
             _boardController.ShowBoard();
+            glovesGameObject.SetActive(true);
             PlaceHorse();
             SpawnPawn();
             _eventManager.TriggerEventAsync(EventTypeEnum.HorseCanMove);
@@ -94,10 +101,16 @@ namespace Code
 
         private void OnPlayerMoved()
         {
-            if (_pawnManager.TryToEat()) return;
+            if (_extraPawnSpawned)
+            {
+                _extraPawnSpawned = false;
+            }
+            else if (_pawnManager.TryToEat())
+            {
+                return;
+            }
 
             CheckAndSpawnPawn(ref _movesCount, movesToSpawnPawn);
-
             CheckAndSpawnPawn(ref _movesCountAuxiliary, movesToSpawnPawnSecondary,
                 _pawnsEaten,
                 pawnsEatenToActivateAuxiliarySpawn);
@@ -124,6 +137,7 @@ namespace Code
             _localPersistence.SetMaxScore(_maxScore);
             _boardController.ClearBoard();
             _eventManager.TriggerEventAsync(EventTypeEnum.GameEnded);
+            glovesGameObject.SetActive(false);
         }
 
         private void OnPawnsHidden()
@@ -134,6 +148,7 @@ namespace Code
         private void OnNoActivePawns()
         {
             if (!_isGamePlaying) return;
+            _extraPawnSpawned = true;
             SpawnPawn();
             _movesCount = 0;
         }
