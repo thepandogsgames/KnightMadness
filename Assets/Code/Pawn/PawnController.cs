@@ -55,11 +55,11 @@ namespace Code.Pawn
                     _spriteRenderer.sortingOrder = 2;
                     Sequence.Create()
                         .Group(Tween.Position(transform,
-                            new Vector3(targetCell.BoardPosition.x, targetCell.BoardPosition.y, 0), 0.3f))
+                            new Vector3(targetCell.BoardPosition.x, targetCell.BoardPosition.y, 0), 0.5f))
                         .Group(
                             Sequence.Create()
-                                .Chain(Tween.Scale(transform, new Vector3(1.2f, 1.2f, 1.2f), 0.15f))
-                                .Chain(Tween.Scale(transform, new Vector3(0.75f, 0.75f, 0.75f), 0.15f)))
+                                .Chain(Tween.Scale(transform, new Vector3(1.2f, 1.2f, 1.2f), 0.25f))
+                                .Chain(Tween.Scale(transform, new Vector3(0.75f, 0.75f, 0.75f), 0.25f)))
                         .OnComplete(() => targetCell.CurrentPiece.Eaten());
                     return true;
                 }
@@ -71,14 +71,12 @@ namespace Code.Pawn
         public void Eaten()
         {
             _audioController.PlaySoundWithRandomPitch(eatedSound, false, 0.8f, 1.2f);
-            CurrentCell.CurrentPiece = null;
-            CurrentCell = null;
             _eventManager.TriggerEventAsync(EventTypeEnum.PawnEaten, this);
         }
 
         public void Hidden()
         {
-            CurrentCell.CurrentPiece = null;
+            if ((PawnController)CurrentCell.CurrentPiece == this) CurrentCell.CurrentPiece = null;
             CurrentCell = null;
         }
 

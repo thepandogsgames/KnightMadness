@@ -8,6 +8,7 @@ namespace Code.Utilities.Enums
         PawnEaten,
         AddPoint,
         HorseCanMove,
+        HorseWaiting,
         GameStarted,
         GameEnded,
         CellSelected,

@@ -55,7 +55,7 @@ namespace Code.Pawn
             pawn.CurrentCell = cell;
             cell.CurrentPiece = pawn;
             pawn.transform.position = new Vector3(cell.BoardPosition.x, cell.BoardPosition.y, 0);
-            Tween.Scale(pawn.transform, new Vector3(_visibleScale, _visibleScale, _visibleScale), 0.5f);
+            Tween.Scale(pawn.transform, new Vector3(_visibleScale, _visibleScale, _visibleScale), 0.25f);
             return pawn;
         }
 
@@ -94,7 +94,7 @@ namespace Code.Pawn
             _pool.Enqueue(pawn);
             _activePawns.Remove(pawn);
             if (_activePawns.Count == 0) _eventManager.TriggerEventAsync(EventTypeEnum.NoActivePawns);
-            Tween.Scale(pawn.transform, new Vector3(_invisibleScale, _invisibleScale, _invisibleScale), 0.5f)
+            Tween.Scale(pawn.transform, new Vector3(_invisibleScale, _invisibleScale, _invisibleScale), 0.4f)
                 .OnComplete(() => pawn.gameObject.SetActive(false));
             pawn.Hidden();
         }

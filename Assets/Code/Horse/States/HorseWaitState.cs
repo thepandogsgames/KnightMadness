@@ -15,16 +15,18 @@ namespace Code.Horse.States
         {
             _stateMachineController = stateMachineController;
             _eventManager = eventManager;
-            _eventManager.Subscribe(EventTypeEnum.HorseCanMove, OnHorseCanMove);
         }
 
         public void OnEnterState()
         {
+            _eventManager.Subscribe(EventTypeEnum.HorseCanMove, OnHorseCanMove);
+            _eventManager.TriggerEventAsync(EventTypeEnum.HorseWaiting);
         }
 
         public void OnExitState()
         {
             _canMove = false;
+            _eventManager.Unsubscribe(EventTypeEnum.HorseCanMove, OnHorseCanMove);
         }
 
         public void OnUpdateState()

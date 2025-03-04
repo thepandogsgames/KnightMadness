@@ -38,7 +38,7 @@ namespace Code.Horse
 
         private void Start()
         {
-            _stateMachineController.ChangeState(PlayerStatesEnum.WaitState);
+            _stateMachineController.ChangeState(PlayerStatesEnum.SelectState);
         }
 
         private void Update()

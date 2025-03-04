@@ -51,7 +51,7 @@ namespace Code
             _localPersistence = new LocalPersistence();
             _audioController = new AudioController(audioMixer);
             _maxScore = _localPersistence.GetMaxScore();
-            _eventManager.Subscribe(EventTypeEnum.PlayerMoved, OnPlayerMoved);
+            _eventManager.Subscribe(EventTypeEnum.HorseWaiting, OnHorseWaiting);
             _eventManager.Subscribe(EventTypeEnum.GameStarted, OnGameStarted);
             _eventManager.Subscribe(EventTypeEnum.PlayerEaten, OnPlayerEaten);
             _eventManager.Subscribe(EventTypeEnum.PawnsHidden, OnPawnsHidden);
@@ -99,7 +99,7 @@ namespace Code
             _pawnManager.GetPawn(freeCell);
         }
 
-        private void OnPlayerMoved()
+        private void OnHorseWaiting()
         {
             if (_extraPawnSpawned)
             {

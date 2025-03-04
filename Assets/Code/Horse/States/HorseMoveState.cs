@@ -43,16 +43,17 @@ namespace Code.Horse.States
 
             Sequence.Create()
                 .Group(Tween.Position(_horseTransform,
-                    new Vector3(_targetCell.BoardPosition.x, _targetCell.BoardPosition.y, 0), 0.3f))
+                    new Vector3(_targetCell.BoardPosition.x, _targetCell.BoardPosition.y, 0), 0.4f))
                 .Group(
                     Sequence.Create()
-                        .Chain(Tween.Scale(_horseTransform, new Vector3(1.2f, 1.2f, 1.2f), 0.15f))
-                        .Chain(Tween.Scale(_horseTransform, new Vector3(0.75f, 0.75f, 0.75f), 0.15f)))
+                        .Chain(Tween.Scale(_horseTransform, new Vector3(1.2f, 1.2f, 1.2f), 0.2f))
+                        .Chain(Tween.Scale(_horseTransform, new Vector3(0.75f, 0.75f, 0.75f), 0.2f)))
                 .OnComplete(OnMoveCompleted);
         }
 
         public void OnExitState()
         {
+            _eventManager.TriggerEventAsync(EventTypeEnum.PlayerMoved);
         }
 
         public void OnUpdateState()
@@ -66,7 +67,6 @@ namespace Code.Horse.States
 
         private void OnMoveCompleted()
         {
-            _eventManager.TriggerEventAsync(EventTypeEnum.PlayerMoved);
             _stateMachineController.ChangeState(PlayerStatesEnum.WaitState);
         }
     }
